@@ -12,6 +12,7 @@ public:
 	void pop();
 	Type top();
 	size_t size();
+	Stack<Type>& operator= (const Stack<Type>&);
 	~Stack();
 private:
 	struct Item {
@@ -37,7 +38,7 @@ void Stack<Type>::push(Type val) {
 	newTop->value = val;
 	newTop->next = last;
 	last = newTop;
-	stackSize += 1;
+	++stackSize;
 }
 
 template<typename Type>
@@ -48,7 +49,7 @@ void Stack<Type>::pop() {
 	Item* nextItem = last->next;
 	delete last;
 	last = nextItem;
-	stackSize -= 1;
+	--stackSize;
 }
 
 template<typename Type>
@@ -65,15 +66,37 @@ size_t Stack<Type>::size() {
 }
 
 template<typename Type>
+Stack<Type>& Stack<Type>::operator= (const Stack<Type>& stack) {
+	this->~Stack();
+	Item* prevItem = nullptr;
+	Item* nextStack = stack.last;
+	while (nextStack != nullptr) {
+		Item* nextItem = new Item;
+		nextItem->value = nextStack->value;
+		nextItem->next = nullptr;
+
+		if (prevItem != nullptr)
+			prevItem->next = nextItem;
+		else
+			last = nextItem;
+		prevItem = nextItem;
+		nextStack = nextStack->next;
+	}
+	stackSize = stack.stackSize;
+	return *this;
+}
+
+template<typename Type>
 Stack<Type>::~Stack() {
 	while (!empty()) {
 		Item* nextItem = last->next;
 		delete last;
 		last = nextItem;
 	}
+	stackSize = 0;
 }
 
-void emptyStackError(const char *message) {
+void emptyStackError(const char* message) {
 	std::cerr << "Error: " << message << " Stack is empty!\n";
 	exit(EXIT_FAILURE);
 }
