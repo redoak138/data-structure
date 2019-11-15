@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-template<class Type>
+template<typename Type>
 class Stack {
 public:
 	Stack();
@@ -16,9 +16,11 @@ public:
 	~Stack();
 private:
 	struct Item {
+		Item(Type val, Item* ptr = nullptr) : value(val), next(ptr) {}
 		Type value;
 		Item* next;
-	} *last;
+	};
+	Item *last;
 	size_t stackSize;
 };
 
@@ -34,10 +36,8 @@ bool Stack<Type>::empty() {
 
 template<typename Type>
 void Stack<Type>::push(Type val) {
-	Item* newTop = new Item;
-	newTop->value = val;
-	newTop->next = last;
-	last = newTop;
+	Item* newItem = new Item(val, last);
+	last = newItem;
 	++stackSize;
 }
 
@@ -69,20 +69,17 @@ template<typename Type>
 Stack<Type>& Stack<Type>::operator= (const Stack<Type>& stack) {
 	this->~Stack();
 	Item* prevItem = nullptr;
-	Item* nextStack = stack.last;
-	while (nextStack != nullptr) {
-		Item* nextItem = new Item;
-		nextItem->value = nextStack->value;
-		nextItem->next = nullptr;
-
+	Item* copyStack = stack.last;
+	while (copyStack != nullptr) {
+		Item* nextItem = new Item(copyStack->value);
 		if (prevItem != nullptr)
 			prevItem->next = nextItem;
 		else
-			last = nextItem;
+			this->last = nextItem;
 		prevItem = nextItem;
-		nextStack = nextStack->next;
+		copyStack = copyStack->next;
 	}
-	stackSize = stack.stackSize;
+	this->stackSize = stack.stackSize;
 	return *this;
 }
 
