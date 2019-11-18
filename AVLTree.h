@@ -90,13 +90,10 @@ int diffHeight(Node<Type>* node) {
 }
 
 template<typename Type>
-Type maxKey(Type first, Type second) {
-	return (first < second ? first : second);
-}
-
-template<typename Type>
 void updateHeight(Node<Type>* node) {
-	node->height = 1 + maxKey(heightNode(node->left), heightNode(node->right));
+	int leftHeight = heightNode(node->left);
+	int rightHeight = heightNode(node->right);
+	node->height = 1 + (leftHeight > rightHeight ? leftHeight : rightHeight);
 }
 
 template<typename Type>
